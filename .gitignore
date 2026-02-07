@@ -1,0 +1,71 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Cobertura de tests
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.pytest_cache/
+
+# Entornos virtuales
+.env/
+.env
+.venv/
+venv/
+ENV/
+env/
+
+# Archivos de logs
+logs/*
+!logs/.gitkeep
+*.log
+
+# Runtime data (evidence, outputs). Keep directory structure via .gitkeep.
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Excepciones para examples (datos de demostración)
+!examples/**/*.log
+!examples/**/
+
+# Archivos de HandBrake o ffmpeg temporales
+*.hb.json
+*.tmp
+
+# Salida de diagnósticos o conversiones parciales
+*.bak
+*.old
+*.swp
+
+# Docker
+*.dockerfile
+docker-compose.override.yml
+
+# Otros (editables según tus preferencias)
+.idea/        # Configuración de PyCharm/JetBrains
+.vscode/      # Configuración de Visual Studio Code
+*.sublime-*   # Configuración de Sublime Text
+
+# Archivos del sistema
+ehthumbs.db
+Desktop.ini
+
+# Otros temporales
+*.zip
+*.tar.gz
+*.tar
+*.gz
+*.7z
+
+# Local config overrides (optional)
+config/local.yaml

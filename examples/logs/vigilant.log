@@ -1,0 +1,22 @@
+2026-02-07 09:55:48,636 - vigilant - INFO - convirtiendo path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs
+2026-02-07 09:55:48,960 - vigilant - ERROR - fallo path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs err=[09:55:48] Compile-time hardening features are enabled Cannot load libnvidia-encode.so.1 [09:55:48] vcn: not available on this system [09:55:48] qsv: not available on this system [09:55:48] hb_init: starting libhb thread [09:55:48] thread 7f6aefff96c0 started ("libhb") HandBrake 20250906052339-dddf75f75-makepkg (2025092401) - Linux x86_64 - https://handbrake.fr 16 CPUs detected Opening /1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs... [09:55:48] CPU: AMD Ryzen 7 8700G w/ Radeon 780M Graphics [09:55:48] - logical processor count: 16 [09:55:48] Intel Quick Sync Video support...
+2026-02-07 09:55:48,960 - vigilant - INFO - fallo path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs rescate=si
+2026-02-07 09:55:48,991 - vigilant - INFO - remux path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs
+2026-02-07 09:55:49,047 - vigilant - ERROR - remux fallo path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs
+2026-02-07 09:55:49,047 - vigilant - INFO - rescate path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs
+2026-02-07 09:56:10,190 - vigilant - INFO - rescate ok path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs
+2026-02-07 09:56:10,215 - vigilant - INFO - hash original=47432a84955d5995... archivo=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0.mfs
+2026-02-07 09:56:10,215 - vigilant - INFO - hash convertido=169b6661d05992ca... archivo=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0_forced.mp4
+2026-02-07 09:56:10,216 - vigilant - INFO - integridad guardada path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0_forced.mp4.integrity.json
+2026-02-07 09:56:11,670 - vigilant - INFO - analisis inicio model=llava:13b
+2026-02-07 09:56:11,671 - vigilant - INFO - prefiltro backend=yolo
+2026-02-07 09:56:11,671 - vigilant - INFO - prefiltro yolo model=/path/to/yolov8n.pt conf=0.25 iou=0.45
+2026-02-07 09:56:11,671 - vigilant - INFO - analisis profundo model=llava:13b
+2026-02-07 09:56:11,671 - vigilant - INFO - reporte model=mistral:latest
+2026-02-07 09:56:11,671 - vigilant - INFO - escenario perfil=fixed_night_motion
+2026-02-07 09:56:11,671 - vigilant - INFO - frames modo=interval+scene intervalo=1s umbral_escena=0.02 escala=480
+2026-02-07 09:56:11,671 - vigilant - INFO - movimiento activo min_px=12.0 min_frames=2
+2026-02-07 09:56:11,671 - vigilant - INFO - analizando path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0_forced.mp4
+2026-02-07 09:56:11,692 - vigilant - INFO - hash video=169b6661d05992ca... archivo=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0_forced.mp4
+2026-02-07 09:56:11,768 - vigilant - INFO - frames path=/1234-Calle A 1300 y Calle B 500_2026-05-23T02_29_00_0_6_0_0_forced.mp4 modo=intervalo+escena intervalo=1s umbral=0.02 escala=480
+2026-02-07 10:00:35,686 - vigilant - INFO - analisis ok path=/analysis_a_black_car_moving_20260207T130035Z.md

@@ -1,0 +1,7 @@
+# Dependencias core (runtime)
+typer
+pillow
+pymupdf
+python-dotenv
+requests
+pyyaml

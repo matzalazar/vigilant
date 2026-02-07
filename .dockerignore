@@ -1,0 +1,56 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# Data directories (no incluir en imagen)
+data/
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporales
+*.tmp
+*.bak
+*.old
+*.swp
+*.log
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Documentation build
+docs/_build/
+
+# Tests
+.tox/
+.coverage.*

@@ -1,0 +1,231 @@
+# Configuración de Vigilant (versionada)
+# -----------------------------------------------------------------------------
+# Este archivo está destinado a ser editado por usuarios. Es seguro commitear.
+# Para overrides locales, crear config/local.yaml (ignorado por git).
+# Las variables de entorno aún pueden sobrescribir cualquier valor si es necesario.
+
+# -----------------------------------------------------------------------------
+# Rutas (no sensibles). Para rutas sensibles, usar .env
+# -----------------------------------------------------------------------------
+paths:
+  # Directorio base de datos para reports/tmp (rutas relativas se resuelven desde raíz del repo)
+  data_dir: "data"
+
+  # Overrides opcionales (por defecto es data_dir/* si no están configurados)
+  input_pdf_dir: "data/pdf"
+  output_json_dir: "data/json"
+  logs_dir: "logs"
+
+# -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
+logging:
+  # DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
+
+# -----------------------------------------------------------------------------
+# HandBrake defaults (usado por convert)
+# -----------------------------------------------------------------------------
+handbrake:
+  preset: "Fast 1080p30"
+
+# -----------------------------------------------------------------------------
+# AI / Ollama
+# -----------------------------------------------------------------------------
+ai:
+  # URL del servidor Ollama
+  ollama_url: "http://localhost:11434"
+
+  # Modelo base (fallback)
+  model: "llava:13b"
+
+  # Modelos para pipeline multi-etapa
+  filter_backend: "llava"         # "llava" o "yolo"
+  filter_model: "llava:13b"       # usado cuando filter_backend=llava
+  analysis_model: "llava:13b"
+  report_model: "mistral:latest"
+  embed_model: "nomic-embed-text:latest"
+
+  # Plantillas de prompts (placeholders: {prompt}, {items})
+  # - filter: respuesta JSON corta para velocidad
+  # - analysis: descripción más rica para contexto forense
+  # - report: reporte extenso; {items} se inyecta como lista de bullets
+  # - report_system: rol del sistema para el modelo de reporte
+  prompts:
+    filter: |
+      Analiza la imagen y decide si cumple el criterio.
+      Criterio: {prompt}
+      Responde SOLO en JSON con: match (yes/no), confidence (0-100), detail (<=8 palabras).
+    analysis: |
+      Analiza la imagen con criterio forense.
+      Objetivo: {prompt}
+      Describe lo relevante y por qué coincide. Usa 2-4 oraciones en español.
+    report: |
+      Redacta un informe profesional en español con estilo juridico.
+
+      FORMATO OBLIGATORIO (Markdown):
+      Hechos Observables:
+      - ...
+
+      Coincidencias relevantes:
+      - ...
+
+      Observaciones:
+      - ...
+
+      Limitaciones:
+      - ...
+
+      Reglas:
+      - Usa SOLO esas 4 secciones (exactas).
+      - Bajo cada sección, usa SOLO bullets que comiencen con "- " (no parrafos).
+      - No inventes datos. No asumas direcciones, marcas, matrículas, etc.
+      - No incluyas duraciones ni tiempos exactos (HH:MM:SS); si es necesario, indica "timestamp aproximado".
+      - Mantén cada bullet breve (1-2 oraciones).
+
+      Objeto de busqueda: {prompt}
+
+      Base tu redaccion solo en estos registros (pueden contener timestamps aproximados):
+      {items}
+    report_system: "Eres un redactor juridico especializado en evidencia audiovisual."
+
+  # Intervalo de muestreo en segundos (usado por extracción de frames)
+  sample_interval: 10
+
+  # Umbrales de prefiltro
+  filter_min_confidence: 0.60
+
+  # Filtro de embeddings semánticos
+  use_embeddings: false
+  embed_threshold: 0.30
+
+  # Límites de tokens (más corto = más rápido, menos verbose)
+  filter_max_tokens: 48
+  analysis_max_tokens: 256
+  report_max_tokens: 512
+  report_max_items: 50
+
+# -----------------------------------------------------------------------------
+# Extracción de frames (Modo A)
+# -----------------------------------------------------------------------------
+frames:
+  # interval | scene | interval+scene
+  mode: "interval+scene"
+
+  # Umbral de cambio de escena (más bajo = más sensible)
+  scene_threshold: 0.05
+
+  # Ancho de escala de salida en píxeles (0 = original)
+  scale: 480
+
+# -----------------------------------------------------------------------------
+# Prefiltro YOLO (Modo B)
+# -----------------------------------------------------------------------------
+# IMPORTANTE: El path al modelo YOLO se configura SOLO en .env con VIGILANT_YOLO_MODEL
+yolo:
+  # Umbrales de detección
+  confidence: 0.25
+  iou: 0.45
+
+  # Tamaño de imagen usado por YOLO (más pequeño = más rápido)
+  img_size: 640
+
+  # Device: "cpu" (default) o "0" para GPU
+  device: "cpu"
+
+  # Filtro opcional de clases (dejar vacío para auto desde prompt)
+  classes: ["person", "car"]
+
+# -----------------------------------------------------------------------------
+# Detección de movimiento (solo YOLO)
+# -----------------------------------------------------------------------------
+motion:
+  # Habilitar filtro de movimiento. Solo aplica cuando filter_backend=yolo.
+  enable: true
+
+  # Si es true, el filtro de movimiento solo se aplica cuando el prompt incluye las keywords abajo
+  require_keywords: true
+
+  # Keywords para activar el filtro de movimiento
+  keywords:
+    - "moving"
+    - "in motion"
+    - "en movimiento"
+    - "circulando"
+    - "en marcha"
+
+  # Desplazamiento mínimo en píxeles entre frames para considerar "movimiento"
+  min_displacement_px: 12
+
+  # Cuántos frames consecutivos deben mostrar movimiento antes de pasar a LLaVA
+  min_frames: 2
+
+# -----------------------------------------------------------------------------
+# Auto-ajuste basado en escenario (opcional)
+# -----------------------------------------------------------------------------
+# Define tu escenario (cámara, iluminación, movimiento) y deja que los perfiles
+# sobrescriban configuraciones automáticamente. Se aplicará el primer perfil que coincida.
+scenario:
+  # Valores de ejemplo: fixed | mobile
+  camera: "fixed"
+  # Valores de ejemplo: day | night | mixed
+  lighting: "night"
+  # Movimiento esperado en la escena: true | false
+  motion: true
+
+profiles:
+  - name: "fixed_night_motion"
+    match:
+      camera: "fixed"
+      lighting: "night"
+      motion: true
+    overrides:
+      frames:
+        mode: "interval+scene"
+        scene_threshold: 0.02
+        scale: 480
+      ai:
+        sample_interval: 8
+        filter_backend: "yolo"
+      motion:
+        enable: true
+        require_keywords: false
+
+  - name: "fixed_day_motion"
+    match:
+      camera: "fixed"
+      lighting: "day"
+      motion: true
+    overrides:
+      frames:
+        mode: "interval+scene"
+        scene_threshold: 0.08
+        scale: 640
+      ai:
+        sample_interval: 5
+        filter_backend: "yolo"
+      motion:
+        enable: true
+        require_keywords: true
+
+  - name: "fixed_night_static"
+    match:
+      camera: "fixed"
+      lighting: "night"
+      motion: false
+    overrides:
+      frames:
+        mode: "scene"
+        scene_threshold: 0.02
+        scale: 480
+      ai:
+        sample_interval: 12
+        filter_backend: "llava"
+
+# -----------------------------------------------------------------------------
+# Defaults de rescate de video raw
+# -----------------------------------------------------------------------------
+raw:
+  pix_fmt: "yuv420p"
+  resolution: "1280x720"
+  framerate: 30

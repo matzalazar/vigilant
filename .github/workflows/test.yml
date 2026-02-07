@@ -1,0 +1,57 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Probar en Python 3.8 (mínimo) y 3.11 (recomendado)
+        python-version: ["3.8", "3.11"]
+
+    steps:
+    # Checkout del código
+    - uses: actions/checkout@v4
+    
+    # Configurar versión de Python
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    # Instalar dependencias del sistema (ffmpeg, ffprobe)
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+    
+    # Instalar dependencias de desarrollo
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+    
+    # Linting opcional con ruff
+    - name: Lint with ruff (if available)
+      continue-on-error: true
+      run: |
+        pip install ruff || true
+        ruff check . || true
+    
+    # Ejecutar suite de tests con cobertura
+    - name: Run tests
+      run: |
+        pytest -v --cov=vigilant --cov-report=term --cov-report=xml --cov-fail-under=45
+    
+    # Subir reporte de cobertura a Codecov (solo en Python 3.11)
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: matrix.python-version == '3.11'
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false

@@ -1,0 +1,8 @@
+# Dependencias de desarrollo (tests, coverage, mocks)
+pytest>=7.0
+pytest-cov>=4.0
+pytest-mock>=3.10
+
+# Linting (opcional, pero recomendado para CI local)
+ruff
+

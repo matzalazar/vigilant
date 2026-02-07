@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vigilant"
+version = "0.2.0"
+description = "A forensic video processing and analysis suite."
+authors = [
+  { name = "Matías Leonel Zalazar", email = "matias.zalazar@icloud.com" },
+]
+dependencies = [
+    "typer",
+    "pillow",
+    "pymupdf",
+    "python-dotenv",
+    "requests",
+    "pyyaml",
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-cov>=4.0", "pytest-mock>=3.10", "ruff"]
+yolo = ["ultralytics"]
+
+[project.scripts]
+vigilant = "vigilant.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["vigilant"]
+include = ["vigilant/config/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --strict-markers"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]

@@ -1,0 +1,51 @@
+# Ejemplo de sobreescritura de default.yaml (copiar a config/local.yaml)
+# -----------------------------------------------------------------------------
+# Este archivo muestra sobreescrituras típicas para una máquina local.
+# No se utiliza por el app a menos que lo renombres a config/local.yaml.
+
+ai:
+  filter_backend: "yolo"
+  sample_interval: 1
+  use_embeddings: false
+
+frames:
+  mode: "interval+scene"
+  scene_threshold: 0.05
+  scale: 480
+
+# Path al modelo YOLO se configura en .env con VIGILANT_YOLO_MODEL
+yolo:
+  classes: ["person", "car"]
+
+motion:
+  enable: true
+  require_keywords: true
+  min_displacement_px: 12
+  min_frames: 2
+
+
+profiles:
+  - name: "fixed_night_motion"
+    match:
+      camera: "fixed"
+      lighting: "night"
+      motion: true
+    overrides:
+      frames:
+        mode: "interval+scene"
+        scene_threshold: 0.02
+        scale: 480
+      ai:
+        sample_interval: 1
+        filter_backend: "yolo"
+      motion:
+        enable: true
+        require_keywords: false
+
+scenario:
+  # Valores de ejemplo: fixed | mobile
+  camera: "fixed"
+  # Valores de ejemplo: day | night | mixed
+  lighting: "night"
+  # Movimiento esperado en la escena: true | false
+  motion: true

@@ -1,0 +1,24 @@
+# Local overrides example (copy to config/local.yaml)
+# -----------------------------------------------------------------------------
+# This file shows typical overrides for a local machine.
+# It is not used by the app unless you rename it to config/local.yaml.
+
+ai:
+  filter_backend: "yolo"
+  sample_interval: 2
+  use_embeddings: false
+
+frames:
+  mode: "interval+scene"
+  scene_threshold: 0.05
+  scale: 480
+
+# Path al modelo YOLO se configura en .env con VIGILANT_YOLO_MODEL
+yolo:
+  classes: ["person", "car"]
+
+motion:
+  enable: true
+  require_keywords: true
+  min_displacement_px: 12
+  min_frames: 2

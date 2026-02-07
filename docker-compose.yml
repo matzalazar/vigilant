@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # Servicio Ollama (motor de IA)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vigilant-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:11434/api/tags" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - vigilant-network
+
+  # Servicio Vigilant (aplicación principal)
+  vigilant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vigilant-app
+    environment:
+      # Configuración de Ollama
+      - VIGILANT_OLLAMA_URL=http://ollama:11434
+      # Nivel de logging
+      - VIGILANT_LOG_LEVEL=INFO
+      # Directorios de datos (dentro del contenedor)
+      - VIGILANT_INPUT_DIR=/data/mfs
+      - VIGILANT_OUTPUT_DIR=/data/mp4
+      - VIGILANT_INPUT_PDF_DIR=/data/pdf
+      - VIGILANT_OUTPUT_JSON_DIR=/data/json
+      - VIGILANT_DATA_DIR=/app/data
+    volumes:
+      # Montaje de directorios de datos host -> contenedor
+      - ./data/mfs:/data/mfs
+      - ./data/mp4:/data/mp4
+      - ./data/pdf:/data/pdf
+      - ./data/json:/data/json
+      # Reportes y temporales (análisis)
+      - ./data/tmp:/app/data/tmp
+      - ./data/reports:/app/data/reports
+      # Montaje de logs
+      - ./logs:/app/logs
+      # Montaje de config para overrides locales
+      - ./config/local.yaml:/app/config/local.yaml:ro
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - vigilant-network
+    # El contenedor se mantiene vivo para ejecutar comandos
+    entrypoint: [ "tail", "-f", "/dev/null" ]
+    restart: unless-stopped
+
+volumes:
+  # Volumen persistente para modelos de Ollama
+  ollama_data:
+    driver: local
+
+networks:
+  vigilant-network:
+    driver: bridge
