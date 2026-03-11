@@ -40,7 +40,7 @@ Guía para desplegar Vigilant en entornos de producción con Docker.
 ```
 
 > [!NOTE]
-> Vigilant es **CLI-only** y no expone un servicio HTTP propio. Si querés controlar acceso de red, el punto típico a proteger/exponer es **Ollama** (puerto 11434) o la red Docker interna; un reverse proxy (Nginx/Caddy) sería un componente **externo** y opcional, no parte del proyecto.
+> Vigilant es **CLI-only** y no expone un servicio HTTP propio. Si quieres controlar acceso de red, el punto típico a proteger/exponer es **Ollama** (puerto 11434) o la red Docker interna; un reverse proxy (Nginx/Caddy) sería un componente **externo** y opcional, no parte del proyecto.
 
 ## Deployment con Docker Compose
 
@@ -136,7 +136,7 @@ profiles:
 
 ### 3. Docker Compose (base)
 
-El repositorio incluye `docker-compose.yml` como base. Para producción podés aplicar
+El repositorio incluye `docker-compose.yml` como base. Para producción puedes aplicar
 overrides (límites, logging, volúmenes read-only) sobre este archivo.
 
 **`docker-compose.yml`:**
@@ -419,7 +419,7 @@ docker compose -f docker-compose.yml up -d
 ### Procesamiento Paralelo
 
 Vigilant no incluye un scheduler/cola interna ni mecanismos de locking para ejecución concurrente.
-Si necesitás paralelizar, hacelo a nivel externo segmentando inputs (por directorios) y usando
+Si necesitas paralelizar, hazlo a nivel externo segmentando inputs (por directorios) y usando
 directorios de runtime separados (especialmente `data/tmp/` y `data/reports/`) para evitar colisiones.
 
 ### Cluster Multi-Nodo (avanzado)

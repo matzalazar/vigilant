@@ -1,3 +1,7 @@
+> 🇪🇸 [Versión en español](README_ES.md)
+
+![Vigilant header](assets/vigilant_header.png)
+
 # Vigilant — Forensic Video Processing Suite
 
 ![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)
@@ -5,32 +9,32 @@
 ![Tests](https://github.com/matzalazar/vigilant/workflows/Tests/badge.svg)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey.svg)
 
-**Vigilant** es una suite de procesamiento forense de video que convierte formatos propietarios de CCTV a estándares abiertos, con análisis visual asistido por IA local y chain of custody automatizado para conversiones. Diseñado para investigadores, analistas forenses y profesionales de seguridad que requieren trazabilidad y verificación independiente.
+**Vigilant** is a professional forensic video processing suite that converts proprietary CCTV formats to open standards, with local AI-assisted visual analysis and automated chain of custody for conversions. Designed for investigators, forensic analysts, and security professionals requiring traceability and independent verification.
 
-## Arquitectura del Sistema
+## System Architecture
 
 ```mermaid
 graph LR
-    subgraph IN["Entrada"]
+    subgraph IN["Input"]
         MFS[.mfs CCTV]
         PDF[PDF]
     end
 
-    subgraph CONV["Conversión"]
+    subgraph CONV["Conversion"]
         HB[HandBrake]
-        RES[Rescate]
+        RES[Rescue]
         HASH[SHA-256]
         META[Metadata]
     end
 
-    subgraph AI["Análisis IA (opcional)"]
+    subgraph AI["AI Analysis (optional)"]
         FR[Frames]
         YO[YOLO]
         LL[LLaVA]
-        RP[Reporte]
+        RP[Report]
     end
 
-    subgraph OUT["Salida"]
+    subgraph OUT["Output"]
         MP4[.mp4]
         SHA[.sha256]
         JSON[.json]
@@ -48,53 +52,53 @@ graph LR
     MP4 -.-> FR --> YO --> LL --> RP --> MD
 ```
 
-## Características Principales
+## Key Features
 
-### 1. Conversión Forense
+### 1. Forensic Conversion (Core Project)
 
-**Problema resuelto:** Los sistemas de CCTV propietarios generan archivos en formatos cerrados (por ejemplo `.mfs`) que no se pueden reproducir en reproductores estándar. Esto dificulta:
-- Revisión de evidencia en equipos forenses
-- Preservación a largo plazo
-- Presentación en procesos legales
-- Compartir con peritos externos
+**Problem solved:** Proprietary CCTV systems generate files in closed formats (currently `.mfs`) that cannot be played in standard players. This makes it difficult to:
+- Review evidence on forensic equipment
+- Long-term preservation
+- Presentation in legal proceedings
+- Share with external experts
 
-**Solución de Vigilant:**
+**Vigilant's solution:**
 
 ```mermaid
 flowchart LR
-    A[Video .mfs<br/>Propietario] --> B{HandBrakeCLI}
-    B -->|Éxito| C[Conversión<br/>Limpia]
-    B -->|Fallo| D[Rescue Mode]
-    D --> E{Análisis<br/>Stream}
-    E --> F[FFmpeg<br/>Extracción]
-    F --> G[Recuperación<br/>Parcial]
+    A[.mfs Video<br/>Proprietary] --> B{HandBrakeCLI}
+    B -->|Success| C[Clean<br/>Conversion]
+    B -->|Failure| D[Rescue Mode]
+    D --> E{Stream<br/>Analysis}
+    E --> F[FFmpeg<br/>Extraction]
+    F --> G[Partial<br/>Recovery]
     C --> H[SHA-256]
     G --> H
     H --> I[.mp4 + .sha256<br/>+ .integrity.json]
 ```
 
-**Características de conversión:**
+**Conversion features:**
 
-- **Multi-herramienta:** HandBrakeCLI como primario, FFmpeg como fallback
-- **Pipeline de rescate:** Recuperación automática de archivos corruptos o parcialmente dañados
-- **Integridad forense:** SHA-256 de origen y destino calculados automáticamente
-- **Metadata completa:** Herramienta, preset, comando, versión, timestamps y tamaños
-- **Reproducibilidad:** Metadata de contenedor normalizada y comandos registrados para reducir variación entre ejecuciones
-- **Batch processing:** Conversión masiva de directorios completos
+- **Multi-tool:** HandBrakeCLI as primary, FFmpeg as fallback
+- **Rescue pipeline:** Automatic recovery of corrupted or partially damaged files
+- **Forensic integrity:** SHA-256 of source and destination calculated automatically
+- **Complete metadata:** Tool, preset, command, version, timestamps, and sizes recorded
+- **Reproducibility:** Container metadata normalized and commands recorded to reduce variation across runs
+- **Batch processing:** Mass conversion of complete directories
 
-**Archivos generados por conversión:**
+**Generated files per conversion:**
 
 ```bash
 input/
   └── footage_2024_01_15.mfs
 
 output/
-  ├── footage_2024_01_15.mp4              # Video convertido
-  ├── footage_2024_01_15.mp4.sha256       # Hash verificable
-  └── footage_2024_01_15.mp4.integrity.json  # Metadata forense
+  ├── footage_2024_01_15.mp4
+  ├── footage_2024_01_15.mp4.sha256
+  └── footage_2024_01_15.mp4.integrity.json
 ```
 
-**Ejemplo de metadata forense (`*.integrity.json`):**
+**Example forensic metadata (`*.integrity.json`):**
 
 ```json
 {
@@ -122,305 +126,313 @@ output/
 }
 ```
 
-### 2. Análisis Visual con IA (Característica Complementaria)
 
-**Problema resuelto:** Revisar manualmente horas de video CCTV es impracticable. Se necesita asistencia para identificar rápidamente frames relevantes.
+### 2. AI-Powered Visual Analysis (Complementary Feature)
 
-**Solución de Vigilant:**
+**Problem solved:** Manually reviewing hours of CCTV video is impractical. Assistance is needed to quickly identify relevant frames.
+
+**Vigilant's solution:**
 
 ```mermaid
 flowchart TD
-    A[Video .mp4] --> B[Extraccion de frames cada N segs + scene]
+    A[Video .mp4] --> B[Frame Extraction N segs + scene]
     
-    B --> C{Prefiltro}
+    B --> C{Prefilter}
 
-    C -->|YOLO| D[Deteccion de objetos, persona, vehiculo]
-    C -->|LLaVA quick| E[Matching rapido por palabras clave]
+    C -->|YOLO| D[Object detection: person, vehicle]
+    C -->|LLaVA quick| E[Fast keyword matching]
 
-    D --> F{Coincide}
+    D --> F{Match?}
     E --> F
 
-    F -->|Si| G[Deep analysis con LLaVA detallado]
-    F -->|No| H[Descartar frame]
+    F -->|Yes| G[Deep analysis with LLaVA detailed]
+    F -->|No| H[Discard frame]
 
-    G --> I[Reporte formato legal con Mistral]
+    G --> I[Legal-format report with Mistral]
     I --> J[Markdown + screenshots]
 ```
 
-**Características:**
-- **Filtrado YOLO**: Pre-clasifica frames por categoría (persona, vehículo, etc.)
-- **Verificación profunda**: LLaVA evalúa contexto completo del frame
-- **Embeddings semánticos (opcional)**: Filtrado de resultados por similitud conceptual para reducir falsos positivos (si `ai.use_embeddings=true`)
-- **Detección de movimiento (solo YOLO, opcional)**: Confirma objetos en movimiento según bounding boxes (si `ai.filter_backend=yolo` y `motion.enable=true`)
+**Analysis features:**
 
-**Nota importante:** El análisis IA es una **herramienta de asistencia investigativa**. Los resultados deben ser revisados por profesionales calificados. No reemplaza el juicio humano.
+- **Local and offline:** Ollama runs models on your machine, no cloud data transfer
+- **Two prefilter modes:** YOLO (fast, common objects) or LLaVA (flexible, any criteria)
+- **Motion detection (YOLO-only, optional):** Additional context for dynamic objects (when `ai.filter_backend=yolo` and motion is enabled)
+- **Deep analysis:** Detailed forensic descriptions of relevant frames
+- **Legal-format reports (AI-assisted):** Professional format generated by Mistral
+- **Semantic embeddings (optional):** Similarity-based filtering to reduce false positives (when `ai.use_embeddings=true`)
+
+**Important note:** AI analysis is an **investigative assistance tool**. Results must be reviewed by qualified professionals. It does not replace human judgment.
 
 ### 3. Chain of Custody
 
-- Hashes SHA-256 de origen y conversión
-- Archivos `.sha256` en formato estándar (compatible con `sha256sum`, con comentario/label opcional)
-- Metadata forense completa (`.integrity.json`)
-- Comando y versión de herramienta registrados en metadata
-- Timestamps UTC y registro de transformaciones
-- Verificación de integridad post-transferencia
+- SHA-256 hashes of source and conversion
+- `.sha256` files in standard format (compatible with `sha256sum`, optional comment/label line)
+- Complete forensic metadata (`.integrity.json`)
+- Command and tool version recorded in metadata
+- UTC timestamps and transformation logging
+- Post-transfer integrity verification
 
-### 4. Procesamiento PDF
+### 4. PDF Processing
 
-- Extracción de metadata de reportes PDF
-- Conversión a JSON estructurado
-- Preparación de metadata para correlación manual con evidencia de video
+- Metadata extraction from PDF reports
+- Structured JSON conversion
+- Preparation for manual correlation with video evidence
 
-## Alcance Técnico
+## Technical Scope
 
-- **Inputs**: `.mfs` (CCTV), `.pdf` (reportes)
-- **Outputs**: `.mp4`, `.json` (metadata), reportes markdown + screenshots
-- **Integridad**: SHA-256, metadata de conversión, timestamps UTC
-- **IA**: LLaVA para análisis, Mistral para reportes, YOLO opcional para prefiltro
-- **Modos**: Offline, reproducible, sin dependencias cloud
+- **Inputs**: `.mfs` (CCTV), `.pdf` (reports)
+- **Outputs**: `.mp4`, `.json` (metadata), markdown reports + screenshots
+- **Integrity**: SHA-256, conversion metadata, UTC timestamps
+- **AI**: LLaVA for analysis, Mistral for reports, optional YOLO prefilter
+- **Modes**: Offline, reproducible, no cloud dependencies
 
-## Requisitos del Sistema
+## System Requirements
 
-### Software Básico
-- Python 3.8 o superior
-- `ffmpeg` (procesamiento de video)
-- `HandBrakeCLI` (conversión primaria)
-- [Ollama](https://ollama.com/) (motor de IA local, requerido solo para `vigilant analyze`)
+### Core Software
+- Python 3.8 or higher
+- `ffmpeg` (video processing)
+- `HandBrakeCLI` (primary conversion)
+- [Ollama](https://ollama.com/) (local AI engine, required only for `vigilant analyze`)
 
-### Dependencias Opcionales
-- `ultralytics` + modelo YOLO (prefiltro rápido)
-- Docker + Docker Compose (deployment containerizado)
+### Optional Dependencies
+- `ultralytics` + YOLO model (fast prefilter)
+- Docker + Docker Compose (containerized deployment)
 
-### Modelos de IA Recomendados
+### Recommended AI Models
 ```bash
-ollama pull llava:13b        # Análisis visual
-ollama pull mistral:latest   # Generación de reportes
-ollama pull nomic-embed-text # Embeddings semánticos (opcional)
+ollama pull llava:13b        # Visual analysis
+ollama pull mistral:latest   # Report generation
+ollama pull nomic-embed-text # Semantic embeddings (optional)
 ```
 
-## Instalación Rápida
+## Quick Installation
 
-### Instalación Local
+### Local Installation
 
 ```bash
-# Clonar el repositorio
+# Clone the repository
 git clone https://github.com/matzalazar/vigilant.git
 cd vigilant
 
-# Instalar dependencias core
+# Install core dependencies
 pip install -r requirements.txt
 pip install -e .
 
-# Verificar instalación
+# Verify installation
 vigilant --version
 
-# Verificar dependencias externas
+# Verify external dependencies
 vigilant --check
 ```
 
-### Setup Automatizado
+### Automated Setup
 
 ```bash
-# Instalación completa con entorno virtual y YOLO
+# Full installation with virtual environment and YOLO
 ./scripts/setup.sh --with-yolo --download-yolo
 
-# Solo CPU (sin GPU)
+# CPU-only (no GPU)
 ./scripts/setup.sh --with-yolo --cpu-only
 ```
 
-### Docker (Recomendado para Producción)
+### Docker (Recommended for Production)
 
 ```bash
-# Iniciar servicios (Vigilant + Ollama)
+# Start services (Vigilant + Ollama)
 docker compose up -d
 
-# Verificar estado
+# Check status
 docker compose ps
 
-# (Opcional) Convertir evidencia .mfs -> .mp4 (si hay archivos en data/mfs/)
+# (Optional) Convert evidence .mfs -> .mp4 (if there are files in data/mfs/)
 docker exec vigilant-app vigilant convert
 
-# Ejecutar análisis
-docker exec vigilant-app vigilant analyze --prompt "persona con chaleco"
+# Run analysis
+docker exec vigilant-app vigilant analyze --prompt "person with vest"
 ```
 
-> En modo Docker, las variables de entorno (rutas, `VIGILANT_OLLAMA_URL`, etc.) se configuran en `docker-compose.yml` (o overrides). El archivo `.env` se usa principalmente para ejecución local (python-dotenv).
+> In Docker mode, environment variables (paths, `VIGILANT_OLLAMA_URL`, etc.) are configured in `docker-compose.yml` (or overrides). The `.env` file is mainly for local execution (python-dotenv).
 
-Documentación completa: [`docs/12_docker_quickstart.md`](docs/12_docker_quickstart.md)
+Complete documentation: [`docs/en/12_docker_quickstart.md`](docs/en/12_docker_quickstart.md)
 
-## Configuración
+## Configuration
 
-### Variables de Entorno (`.env`)
+### Environment Variables (`.env`)
 
 ```ini
-# Rutas de entrada/salida (requerido)
+# Input/output paths (required)
 VIGILANT_INPUT_DIR="/mnt/evidence/raw"
 VIGILANT_OUTPUT_DIR="/mnt/evidence/processed"
 
-# Modelo YOLO (opcional)
+# YOLO model (optional)
 VIGILANT_YOLO_MODEL="/path/to/yolov8n.pt"
 
-# Nivel de logging (opcional, default: INFO)
+# Logging level (optional, default: INFO)
 VIGILANT_LOG_LEVEL="DEBUG"
+
+# AI Analysis (optional)
+VIGILANT_OLLAMA_URL="http://localhost:11434"
+VIGILANT_ANALYSIS_MODEL="llava:13b"
 ```
 
-### Archivos YAML
+### YAML Files
 
-- `config/default.yaml`: Configuración por defecto (versionada)
-- `config/local.yaml`: Overrides locales (ignorada por git)
+- `config/default.yaml`: Default configuration (versioned)
+- `config/local.yaml`: Local overrides (ignored by git)
 
-**Precedencia**: `default.yaml` → `local.yaml` → variables de entorno
+**Precedence**: `default.yaml` → `local.yaml` → environment variables
 
-Documentación completa: [`docs/06_guia_de_configuracion.md`](docs/06_guia_de_configuracion.md)
+Complete documentation: [`docs/en/06_configuration_guide.md`](docs/en/06_configuration_guide.md)
 
-## Uso
+## Usage
 
-### Conversión de Videos
+### Video Conversion
 
 ```bash
-# Convertir todos los archivos .mfs en el directorio de entrada
-# (Rescate automático: activo por defecto)
+# Convert all .mfs files in input directory
+# (Automatic rescue: enabled by default)
 vigilant convert
 
-# (Opcional) Desactivar rescate automático
+# (Optional) Disable automatic rescue
 vigilant convert --no-rescue
 
-# Salida: archivos .mp4 + .sha256 + .integrity.json
+# Output: .mp4 files + .sha256 + .integrity.json
 ```
 
-### Parseo de Reportes PDF
+### PDF Report Parsing
 
 ```bash
-# Extraer metadata de reportes PDF a JSON
+# Extract metadata from PDF reports to JSON
 vigilant parse
 
-# Salida: archivos .json con metadata estructurada
+# Output: .json files with structured metadata
 ```
 
-### Análisis Visual con IA
+### AI Visual Analysis
 
 ```bash
-# Búsqueda de objeto/persona específica
-vigilant analyze --prompt "Vehículo oscuro en movimiento"
+# Search for specific object/person
+vigilant analyze --prompt "Dark vehicle in motion"
 
-# Análisis de archivo específico
-vigilant analyze --video evidence.mp4 --prompt "Persona con mochila roja"
+# Analyze specific file
+vigilant analyze --video evidence.mp4 --prompt "Person with red backpack"
 
-# Salida:
-# - Reporte: data/reports/md/analysis_<slug>_<timestamp>.md
+# Output:
+# - Report: data/reports/md/analysis_<slug>_<timestamp>.md
 # - Screenshots: data/reports/imgs/
-# Nota: el "Informe juridico (IA)" se sanitiza; si se descarta, el reporte lo indicará.
+# Note: the "Legal report (AI)" section is sanitized; if it is discarded, the report will say so.
 ```
 
-> `data/` y `logs/` se consideran directorios de runtime (inputs/outputs) y no se versionan en git.
-> Para ver una corrida real con artefactos anonimizados incluidos en el repo, ver `examples/`.
+> `data/` and `logs/` are treated as runtime directories (inputs/outputs) and are not committed to git.
+> For a real run with anonymized artifacts included in the repository, see `examples/`.
 
-## Arquitectura
+## Architecture
 
 ```
 vigilant/
-├── core/           # Configuración, logging, integridad forense
-├── converters/     # HandBrake, FFmpeg, pipeline de rescate
-├── parsers/        # Extracción de metadata PDF
-└── intelligence/   # Análisis de IA (extracción de frames, LLaVA, YOLO)
+├── core/           # Configuration, logging, forensic integrity
+├── converters/     # HandBrake, FFmpeg, rescue pipeline
+├── parsers/        # PDF metadata extraction
+└── intelligence/   # AI analysis (frame extraction, LLaVA, YOLO)
 ```
 
-**Flujo de procesamiento**:
-1. Conversión (`.mfs` → `.mp4` con chain of custody)
-2. Extracción de frames (interval/scene/híbrido)
-3. Prefiltro opcional (YOLO o LLaVA rápido)
-4. Análisis profundo (LLaVA detallado)
-5. Generación de reporte (Mistral en formato legal)
+**Processing flow**:
+1. Conversion (`.mfs` → `.mp4` with chain of custody)
+2. Frame extraction (interval/scene/hybrid)
+3. Optional prefilter (YOLO or fast LLaVA)
+4. Deep analysis (detailed LLaVA)
+5. Report generation (Mistral in legal format)
 
-Documentación completa: [`docs/03_arquitectura_tecnica.md`](docs/03_arquitectura_tecnica.md)
+Complete documentation: [`docs/en/03_technical_architecture.md`](docs/en/03_technical_architecture.md)
 
 ## Testing
 
 ```bash
-# Instalar dependencias de desarrollo
+# Install development dependencies
 pip install -e ".[dev]"
 
-# Ejecutar suite completa
+# Run full test suite
 pytest -v
 
-# Con cobertura
+# With coverage
 pytest -v --cov=vigilant --cov-report=term-missing
 
-# Solo tests rápidos
+# Fast tests only
 pytest -v -m "not slow"
 ```
 
-Documentación: [`docs/11_tests.md`](docs/11_tests.md)
+Complete documentation: [`docs/en/11_tests.md`](docs/en/11_tests.md)
 
-## Documentación
+## Documentation
 
-### Documentación Técnica (`docs/`)
-- [`00_indice.md`](docs/00_indice.md) - Índice de documentación
-- [`01_instalacion_y_configuracion.md`](docs/01_instalacion_y_configuracion.md) - Setup detallado
-- [`02_chain_of_custody.md`](docs/02_chain_of_custody.md) - Integridad forense y chain of custody
-- [`03_arquitectura_tecnica.md`](docs/03_arquitectura_tecnica.md) - Diseño del sistema
-- [`06_guia_de_configuracion.md`](docs/06_guia_de_configuracion.md) - Referencia de configuración
-- [`10_troubleshooting.md`](docs/10_troubleshooting.md) - Resolución de problemas comunes
-- [`11_tests.md`](docs/11_tests.md) - Ejecución de tests
-- [`12_docker_quickstart.md`](docs/12_docker_quickstart.md) - Deployment con Docker
+### Technical Documentation (`docs/`)
+- [00_index.md](docs/en/00_index.md) - Documentation index
+- [01_installation_and_configuration.md](docs/en/01_installation_and_configuration.md) - Detailed setup
+- [02_chain_of_custody.md](docs/en/02_chain_of_custody.md) - Forensic integrity and chain of custody
+- [03_technical_architecture.md](docs/en/03_technical_architecture.md) - System design
+- [06_configuration_guide.md](docs/en/06_configuration_guide.md) - Configuration reference
+- [10_troubleshooting.md](docs/en/10_troubleshooting.md) - Troubleshooting
+- [11_tests.md](docs/en/11_tests.md) - Running tests
+- [12_docker_quickstart.md](docs/en/12_docker_quickstart.md) - Docker deployment
 
-## Casos de Uso
+## Use Cases
 
-**Investigaciones Forenses**
-- Conversión de evidencia CCTV propietaria a formatos estándar
-- Búsqueda rápida de personas/vehículos en horas de grabación
-- Generación de reportes en formato legal (IA) con hash SHA-256 y trazabilidad
+**Forensic Investigations**
+- Convert proprietary CCTV evidence to standard formats
+- Quick search for people/vehicles in hours of footage
+- Generate legal-format reports (AI-assisted) with SHA-256 and traceability
 
-**Análisis de Seguridad**
-- Revisión retrospectiva de incidentes
-- Identificación de patrones sospechosos
-- Correlación manual de eventos con reportes PDF
+**Security Analysis**
+- Retrospective incident review
+- Suspicious pattern identification
+- Manual event correlation with PDF reports
 
-**Archivo y Preservación:** Vigilant convierte formatos propietarios (actualmente `.mfs`) a MP4 estándar H.264, manteniendo:
-- **Cadena de custodia**: SHA-256 hashes de fuente y destino
-- **Metadata forense**: JSON con comando exacto ejecutado, versiones de herramientas, timestamps
-- **Verificación independiente**: Cualquier investigador puede verificar hashes y metadata con herramientas estándar
+**Archival and Preservation**
+- Migrate proprietary formats to open standards
+- Long-term integrity verification
+- Forensic metadata for traceability
 
-## Consideraciones
+## Non-Goals
 
-Este proyecto **NO** incluye:
-- Interfaz gráfica (GUI)
-- Streaming en tiempo real
-- Procesamiento en la nube
-- Integraciones con sistemas propietarios fuera del nivel de archivos
-- Toma de decisiones automatizada (es una herramienta de asistencia)
+This project does **NOT** include:
+- Graphical user interface (GUI)
+- Real-time streaming
+- Cloud processing
+- Integrations with proprietary systems beyond file level
+- Automated decision-making (this is an investigative assistance tool)
 
-## Contribuir
+## Professional Services & Support
 
-Las contribuciones son bienvenidas. Por favor lee `CONTRIBUTING.md` para detalles sobre nuestro código de conducta y proceso de pull requests.
+If your institution requires deploying **Vigilant** in a production environment, I offer specialized services including:
 
-## Licencia
+- **Setup & Implementation:** Configuration of air-gapped forensic workstations and hardware optimization for local AI.
+- **Technical Training:** Chain of custody workflows, SHA-256 integrity management, and vision model usage for evidence analysis.
+- **Process Consulting:** Adapting the suite to specific investigative workflows.
 
-Este proyecto está licenciado bajo GPL-3.0. Ver archivo `LICENSE` para detalles.
+Contact me via [LinkedIn](https://www.linkedin.com/in/matzalazar/) or [matzalazar.com](https://matzalazar.com).
 
-**Nota sobre uso forense**: Este software es una herramienta de asistencia investigativa. Los resultados deben ser revisados por profesionales calificados. No reemplaza el juicio humano ni la cadena de custodia física.
+### Support the project
 
-## Autor
+**Vigilant** is free and open source software. If this tool has been useful in an investigation or you want to support further development:
+
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FF813F?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://cafecito.app/matzalazar)
+
+## Contributing
+
+Contributions are welcome. Please read `CONTRIBUTING_EN.md` for details about our code of conduct and pull request process.
+
+## License
+
+This project is licensed under GPL-3.0. See `LICENSE` file for details.
+
+**Note on forensic use**: This software is an investigative assistance tool. Results must be reviewed by qualified professionals. It does not replace human judgment or physical chain of custody.
+
+## Author
 
 **Matías L. Zalazar**
 
-## Servicios Profesionales y Soporte
+## Additional Resources
 
-Si tu institución requiere implementar **Vigilant** en un entorno de producción, ofrezco servicios especializados de:
-
-* **Setup e Implementación:** Configuración de estaciones de trabajo forenses *air-gapped* y optimización de hardware para IA local.
-* **Capacitación Técnica:** Formación sobre cadena de custodia digital, gestión de integridad con SHA-256 y uso de modelos de visión para análisis de evidencia.
-* **Consultoría de Procesos:** Adaptación de la suite a flujos de trabajo investigativos específicos.
-
-Podés contactarme a través de [LinkedIn](https://www.linkedin.com/in/matzalazar/) o a través de mi sitio web [matzalazar.com](https://matzalazar.com).
-
-### Apoyo al proyecto
-
-**Vigilant** es software libre y de código abierto. Si la herramienta te fue de utilidad en una investigación o quieres apoyar el desarrollo de nuevas funciones, podés invitarme un Cafecito:
-
-[![Invitame un cafecito](https://img.shields.io/badge/Invitame-un%20cafecito-FF813F?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://cafecito.app/matzalazar)
-
-## Recursos Adicionales
-
-- Documentación completa: [`docs/00_indice.md`](docs/00_indice.md)
-- Issues y soporte: [GitHub Issues](https://github.com/matzalazar/vigilant/issues)
-- Ejemplos: `examples/`
+- [Complete Documentation](docs/en/00_index.md)
+- [Issues and Support](https://github.com/matzalazar/vigilant/issues)
+- [Examples](examples/)

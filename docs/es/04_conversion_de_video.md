@@ -310,9 +310,9 @@ handbrake:
 
 ## Troubleshooting
 
-Ver `10_troubleshooting.md` para problemas comunes de conversión.
+Ver [10_troubleshooting.md](10_troubleshooting.md) para problemas comunes de conversión.
 
-Para archivos que fallan incluso con rescue mode, ver `05_rescue_mode.md` para técnicas avanzadas.
+Para archivos que fallan incluso con rescue mode, ver [05_rescue_mode.md](05_rescue_mode.md) para técnicas avanzadas.
 
 ## Referencias
 
@@ -322,4 +322,4 @@ Para archivos que fallan incluso con rescue mode, ver `05_rescue_mode.md` para t
 
 ---
 
-**Siguiente:** `05_rescue_mode.md` - Pipeline de rescate para archivos corruptos
+**Siguiente:** [05_rescue_mode.md](05_rescue_mode.md) - Pipeline de rescate para archivos corruptos

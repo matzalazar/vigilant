@@ -129,7 +129,7 @@ ollama pull mistral:latest
 vigilant analyze --video /ruta/al/video.mp4 --prompt "tu búsqueda"
 ```
 
-Ver [documentación completa](../README_EN.md) para más detalles.
+Ver [documentación completa](../README_ES.md) para más detalles.
 
 ## Lecciones Aprendidas
 
@@ -169,10 +169,10 @@ Get-FileHash video.mp4 -Algorithm SHA256
 
 ## Referencias
 
-- [Documentación completa](../docs/)
-- [Arquitectura del sistema](../docs/03_arquitectura_tecnica.md)
-- [Cadena de Custodia](../docs/02_chain_of_custody.md)
-- [Guía de configuración](../docs/06_guia_de_configuracion.md)
+- [Documentación completa](../docs/es/)
+- [Arquitectura del sistema](../docs/es/03_arquitectura_tecnica.md)
+- [Cadena de Custodia](../docs/es/02_chain_of_custody.md)
+- [Guía de configuración](../docs/es/06_guia_de_configuracion.md)
 
 ---
 
